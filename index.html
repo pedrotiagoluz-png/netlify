@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chuva de Caracteres 2</title>
+    <style>
+        /* Define um estilo básico para o corpo da página */
+        body {
+            margin: 0;
+            overflow: hidden; /* Remove as barras de rolagem */
+            background-color: #000; /* Fundo preto para o contraste */
+        }
+
+        /* O canvas é o elemento principal onde a animação será desenhada */
+        #characterCanvas {
+            display: block;
+            background-color: #000;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="characterCanvas"></canvas>
+
+    <script>
+        // Obtém o elemento canvas e o contexto 2D
+        const canvas = document.getElementById('characterCanvas');
+        const context = canvas.getContext('2d');
+
+        // Define as dimensões do canvas para o tamanho da janela
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // O conjunto de caracteres a serem usados
+        const characters = '1234567890';
+        const fontSize = 16;
+        const columns = canvas.width / fontSize;
+
+        // Cria um array para a posição vertical de cada coluna de caracteres
+        const drops = [];
+        for (let i = 0; i < columns; i++) {
+            drops[i] = 1; // Inicia a primeira "gota" no topo
+        }
+
+        // Função principal do loop de animação
+        function draw() {
+            // Cria um efeito de trilha preenchendo o canvas com uma cor semi-transparente
+            context.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            context.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Define a fonte e tamanho do texto
+            context.font = fontSize + 'px monospace';
+
+            // Loop por cada coluna
+            for (let i = 0; i < drops.length; i++) {
+                // Seleciona um caractere aleatório
+                const text = characters[Math.floor(Math.random() * characters.length)];
+
+                // Define uma cor aleatória para o caractere
+                const randomColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                context.fillStyle = randomColor;
+
+                // Desenha o caractere na tela
+                context.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                // Se o caractere atingir a parte inferior da tela, ele volta para o topo
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+
+                // Aumenta a posição vertical para o próximo caractere na coluna
+                drops[i]++;
+            }
+        }
+
+        // Atualiza a animação
+        function animate() {
+            draw();
+            requestAnimationFrame(animate);
+        }
+
+        // Inicia o loop de animação quando a página é carregada
+        window.onload = animate;
+
+        // Ajusta o tamanho do canvas quando a janela é redimensionada
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            columns = canvas.width / fontSize;
+            drops.length = columns; // Redimensiona o array de colunas
+            for (let i = 0; i < columns; i++) {
+                drops[i] = 1; // Reseta as posições para o topo
+            }
+        });
+    </script>
+</body>
+</html>
